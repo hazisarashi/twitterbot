@@ -1,7 +1,5 @@
 #coding: utf-8
 
-require 'igo-ruby'
-
 module TwitterBot
   class Markov
     def initialize()

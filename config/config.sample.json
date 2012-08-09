@@ -6,8 +6,5 @@
     "oauth_token"        : "",
     "oauth_token_secret" : ""
   },
-  "accaunt": {
-    "bot_screen_name"  : "", // Botアカウント
-    "src_screen_names" : ["", ""] // 参照元となるユーザID（複数指定可）
-  }
+  "src_screen_names": [""] // 参照元となるユーザID（複数指定可）
 }

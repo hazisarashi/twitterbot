@@ -9,8 +9,8 @@ require 'twitterbot/core_ext/string'
 
 module TwitterBot
   class Crawler
-    def initialize(bot_screen_name)
-      @bot_screen_name = bot_screen_name
+    def initialize
+      @bot_screen_name = Twitter.update_profile.screen_name
       @replied_users = Array.new
       @markov = Markov.new
       @markov_mention = Markov.new
@@ -30,7 +30,7 @@ module TwitterBot
       }
     end
 
-    def build_tweet()
+    def build_tweet
       10.times do
         result = @markov.build.join('')
         return result if result.size <= 140 && result.size >= 4 # 140文字以内なら採用
@@ -81,10 +81,10 @@ module TwitterBot
       }
     end
 
-    def tweet
-      result = build_tweet
-      Twitter.update(result)
-      puts "tweet(markov): #{result}"
+    def tweet(tweet_text=nil)
+      tweet_text = build_tweet unless tweet_text
+      Twitter.update(tweet_text)
+      puts "tweet(markov): #{tweet_text}"
     end
   end
 end
