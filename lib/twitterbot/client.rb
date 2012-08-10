@@ -1,6 +1,8 @@
 #coding: utf-8
 
+require 'net/http'
 require 'twitter'
+require 'uri'
 require 'twitterbot/markov'
 require 'twitterbot/spliter'
 require 'twitterbot/core_ext/string'
@@ -15,10 +17,23 @@ module TwitterBot
       @spliter = Spliter.new
     end
 
+    def http_query(method, uri_str, query)
+      uri = URI.parse(uri_str)
+      query_string = query.map{|k,v| URI.encode(k) + "=" + URI.encode(v) }.join('&')
+      Net::HTTP.start(uri.host, uri.port) {|http|
+        if method == 'get'
+          query_string = '?' + query_string unless query_string.empty?
+          http.get(uri.path + query_string)
+        else
+          http.post(uri.path, query_string)
+        end
+      }
+    end
+
     def build_tweet
       10.times do
         result = @markov.build.join('')
-        return result if result.size <= 140 && result.size >= 4
+        return result if result.size <= 140 && result.size >= 4 # 140文字以内なら採用
       end
       raise StandardError.new('retly limit is exceeded')
     end
@@ -26,7 +41,7 @@ module TwitterBot
     def build_reply(screen_name)
       result = @markov_mention.build.join('')
       result = "@#{screen_name} #{result}"
-      return result if result.size <= 140
+      return result if result.size <= 140 # 140文字以内なら採用
 
       raise StandardError.new('retly limit is exceeded')
     end
@@ -47,11 +62,12 @@ module TwitterBot
     end
 
     def reply_to_mentions
+      # リプライ済リストを取得
       Twitter.user_timeline(@bot_screen_name).each {|status|
         screen_name = status.in_reply_to_screen_name
         @replied_users << screen_name if screen_name
       }
-
+      # reply
       Twitter.mentions.each {|status|
         id = status.id
         screen_name = status.user.screen_name

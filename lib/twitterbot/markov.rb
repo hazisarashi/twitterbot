@@ -5,6 +5,7 @@ module TwitterBot
     def initialize()
       @table = Array.new
     end
+    attr_reader :table
 
     def study(words)
       return if words.size < 3

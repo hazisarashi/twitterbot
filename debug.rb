@@ -1,6 +1,8 @@
 #coding: utf-8
 
 require 'json'
+require 'optparse'
+require "pp"
 
 $:.unshift(File.dirname(__FILE__) + "/lib")
 require 'twitterbot'
@@ -13,10 +15,16 @@ Twitter.configure {|twitter_config|
   twitter_config.oauth_token_secret = config["twitter"]["oauth_token_secret"]
 }
 
-# main
-bot = TwitterBot.new
-config["src_screen_names"].each do |screen_name|
-  bot.study(screen_name)
+
+# Options
+OptionParser.new do |opt|
+    opt.on('--study [src_screen_names]') do |v|
+      bot = TwitterBot.new
+      $debug=true
+      bot.study(v || config["src_screen_names"][0])
+    end
+    opt.on('--filter [src_screen_names]') do |v|
+      # あとで書く
+    end
+    opt.parse(ARGV)
 end
-# bot.reply_to_mentions unless ARGV.include?("-no-reply")
-bot.tweet unless ARGV.include?("-no-tweet")

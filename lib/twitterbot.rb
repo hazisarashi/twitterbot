@@ -1,6 +1,6 @@
 #coding: utf-8
 
-require 'twitterbot/crawler'
+require 'twitterbot/client'
 
 module TwitterBot
   BEGIN_DELIMITER = '__BEGIN__'
@@ -9,7 +9,7 @@ module TwitterBot
 
   class << self
     def new(*args, &block)
-      TwitterBot::Crawler.new(*args, &block)
+      TwitterBot::Client.new(*args, &block)
     end
 
   private
